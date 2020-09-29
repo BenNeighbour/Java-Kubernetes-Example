@@ -1,0 +1,13 @@
+apiVersion: skaffold/v1
+kind: Config
+build:
+  artifacts:
+    - image: gateway-service
+      docker:
+        dockerfile: Dockerfile
+  local: {}
+
+deploy:
+  kubectl:
+    manifests:
+      - '../k8s/gateway-service.yaml'
