@@ -8,6 +8,18 @@ spring:
         period: 1000
         enabled: true
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 77205801174-blhl08invqpicsft0edbpqn2i7llsa21.apps.googleusercontent.com
+            clientSecret: hSX7LpNBnNYW72Mw8te0-omt
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - email
+              - profile
+
 zuul:
   routes:
     server-example:
@@ -16,3 +28,12 @@ zuul:
       url: 'http://server-example:8080/'
       sensitiveHeaders:
       stripPrefix: true
+
+app:
+  auth:
+    tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
+    tokenExpirationMsec: 864000000
+
+  oauth2:
+    authorizedRedirectUris:
+      - http://localhost:3000/oauth2/redirect

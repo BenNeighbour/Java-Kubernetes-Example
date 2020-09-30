@@ -5,11 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * @author Ben Neighbour
- * @created 25/09/2020
- * @project CloneBnb
- */
 @RestController
 @RequestMapping("/people")
 public class PeopleController {
