@@ -13,7 +13,10 @@ spring:
       client:
         registration:
           google:
+            # Just an example! It won't work unless you use your own!
             clientId: 77205801174-blhl08invqpicsft0edbpqn2i7llsa21.apps.googleusercontent.com
+
+            # Just an example! It won't work unless you use your own!
             clientSecret: hSX7LpNBnNYW72Mw8te0-omt
             redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
             scope:
