@@ -19,6 +19,23 @@ spec:
           image: gateway-service
           ports:
             - containerPort: 8080
+
+        - env:
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: gateway-service-credentials
+                key: username
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: gateway-service-credentials
+                key: password
+          - name: DB_URL
+            valueFrom:
+              secretKeyRef:
+                name: gateway-service-credentials
+                key: url
 ---
 apiVersion: v1
 kind: Service

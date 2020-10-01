@@ -8,20 +8,19 @@ spring:
         period: 1000
         enabled: true
 
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            # Just an example! It won't work unless you use your own!
-            clientId: 77205801174-blhl08invqpicsft0edbpqn2i7llsa21.apps.googleusercontent.com
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
 
-            # Just an example! It won't work unless you use your own!
-            clientSecret: hSX7LpNBnNYW72Mw8te0-omt
-            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
-            scope:
-              - email
-              - profile
+    jpa:
+      hibernate:
+        ddl-auto: update
+
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.PostgreSQLDialect
 
 zuul:
   routes:
