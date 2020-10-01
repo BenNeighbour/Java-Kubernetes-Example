@@ -6,4 +6,4 @@
 - [X] Create Dockerfile(s)
 - [X] Create Gateway Service
 - [ ] Create Kubernetes Ingress Controller to proxy the API Gateway & UI React App
-- [ ] Add Authentication to Gateway Service
+- [X] Add Authentication to Gateway Service
