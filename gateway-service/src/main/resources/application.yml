@@ -1,41 +1,12 @@
 spring:
-  application:
-    name: 'gateway-service'
+  profiles:
+    active: 'local'
 
-  cloud:
-    kubernetes:
-      reload:
-        period: 1000
-        enabled: true
 
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
+logging.level.org.springframework.cloud.kubernetes: DEBUG
 
-    jpa:
-      hibernate:
-        ddl-auto: update
-
-      properties:
-        hibernate:
-          dialect: org.hibernate.dialect.PostgreSQLDialect
-
-zuul:
-  routes:
-    server-example:
-      path: '/server/**'
-      serviceId: 'server-example'
-      url: 'http://server-example:8080/'
-      sensitiveHeaders:
-      stripPrefix: true
-
-app:
-  auth:
-    tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
-    tokenExpirationMsec: 864000000
-
-  oauth2:
-    authorizedRedirectUris:
-      - http://localhost:3000/oauth2/redirect
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,refresh,keepalive,health

@@ -10,4 +10,4 @@ build:
 deploy:
   kubectl:
     manifests:
-      - '../k8s/gateway-service.yaml'
+      - './k8s/gateway-service.yaml'

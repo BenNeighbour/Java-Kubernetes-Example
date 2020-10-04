@@ -1,8 +1,8 @@
 package com.benneighbour.javakubernetes.gatewayservice.security;
 
+import com.benneighbour.javakubernetes.gatewayservice.exception.ResourceNotFoundException;
 import com.benneighbour.javakubernetes.gatewayservice.model.User;
 import com.benneighbour.javakubernetes.gatewayservice.repository.UserRepository;
-import io.fabric8.kubernetes.client.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -33,7 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Transactional
     public UserDetails loadUserById(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(
-                () -> new ResourceNotFoundException("User")
+                () -> new ResourceNotFoundException("User", "id", userId)
         );
 
         return UserPrincipal.create(user);

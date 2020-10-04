@@ -33,3 +33,5 @@ build/
 .vscode/
 
 /k8s/secrets/
+/k8s/config/
+/gateway-service/src/main/resources/application-local.yml

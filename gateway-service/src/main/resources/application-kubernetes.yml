@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: 'gateway-service'
+
+  cloud:
+    kubernetes:
+      reload:
+        period: 1000
+        enabled: true
+
+      secrets:
+        name: gateway-service-credentials
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+zuul:
+  routes:
+    server-example:
+      path: '/server/**'
+      serviceId: 'server-example'
+      url: 'http://server-example:8080/'
+      sensitiveHeaders:
+      stripPrefix: true

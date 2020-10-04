@@ -17,25 +17,23 @@ spec:
       containers:
         - name: gateway-service
           image: gateway-service
+          imagePullPolicy: Never
           ports:
             - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: gateway-service-credentials
+                  key: username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gateway-service-credentials
+                  key: password
+            - name: SPRING_DATASOURCE_URL
+              value: 'jdbc:postgresql://postgresql:5432/gateway-service'
 
-        - env:
-          - name: DB_USER
-            valueFrom:
-              secretKeyRef:
-                name: gateway-service-credentials
-                key: username
-          - name: DB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: gateway-service-credentials
-                key: password
-          - name: DB_URL
-            valueFrom:
-              secretKeyRef:
-                name: gateway-service-credentials
-                key: url
 ---
 apiVersion: v1
 kind: Service
