@@ -7,7 +7,7 @@ import com.benneighbour.javakubernetes.gatewayservice.repository.UserRepository;
 import com.benneighbour.javakubernetes.gatewayservice.security.UserPrincipal;
 import com.benneighbour.javakubernetes.gatewayservice.security.user.OAuth2UserInfo;
 import com.benneighbour.javakubernetes.gatewayservice.security.user.OAuth2UserInfoFactory;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -20,10 +20,10 @@ import org.springframework.util.StringUtils;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-  private final UserRepository userRepository;
+  @Autowired
+  private UserRepository userRepository;
 
   @Override
   public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest)

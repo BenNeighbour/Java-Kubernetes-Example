@@ -1,6 +1,6 @@
 package com.benneighbour.javakubernetes.gatewayservice.utils;
 
-import org.apache.commons.lang.SerializationUtils;
+import org.springframework.util.SerializationUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +25,7 @@ public class CookieUtils {
   }
 
   public static void addCookie(
-          HttpServletResponse response, String name, String value, int maxAge) {
+      HttpServletResponse response, String name, String value, int maxAge) {
     Cookie cookie = new Cookie(name, value);
     cookie.setPath("/");
     cookie.setHttpOnly(true);
@@ -39,7 +39,7 @@ public class CookieUtils {
     if (cookies != null && cookies.length > 0) {
       for (Cookie cookie : cookies) {
         if (cookie.getName().equals(name)) {
-          cookie.setValue("");
+          cookie.setValue(null);
           cookie.setPath("/");
           cookie.setMaxAge(0);
           response.addCookie(cookie);
@@ -49,7 +49,7 @@ public class CookieUtils {
   }
 
   public static String serialize(Object object) {
-    return Base64.getUrlEncoder().encodeToString(SerializationUtils.serialize(object.getClass()));
+    return Base64.getUrlEncoder().encodeToString(SerializationUtils.serialize(object));
   }
 
   public static <T> T deserialize(Cookie cookie, Class<T> cls) {
