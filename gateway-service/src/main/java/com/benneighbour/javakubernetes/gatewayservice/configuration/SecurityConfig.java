@@ -89,6 +89,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .authorizeRequests()
         .antMatchers(
             "/",
+            "/signup",
+            "/login",
             "/h2-console/**",
             "/error",
             "/favicon.ico",

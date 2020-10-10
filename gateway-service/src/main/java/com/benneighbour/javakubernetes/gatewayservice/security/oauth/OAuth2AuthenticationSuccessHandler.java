@@ -23,66 +23,81 @@ import static com.benneighbour.javakubernetes.gatewayservice.security.oauth.Http
 @Component
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private TokenProvider tokenProvider;
+  private TokenProvider tokenProvider;
 
-    private AppProperties appProperties;
+  private AppProperties appProperties;
 
-    private HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+  private HttpCookieOAuth2AuthorizationRequestRepository
+      httpCookieOAuth2AuthorizationRequestRepository;
 
+  @Autowired
+  public OAuth2AuthenticationSuccessHandler(
+      TokenProvider tokenProvider,
+      AppProperties appProperties,
+      HttpCookieOAuth2AuthorizationRequestRepository
+          httpCookieOAuth2AuthorizationRequestRepository) {
+    this.tokenProvider = tokenProvider;
+    this.appProperties = appProperties;
+    this.httpCookieOAuth2AuthorizationRequestRepository =
+        httpCookieOAuth2AuthorizationRequestRepository;
+  }
 
-    @Autowired
-    public OAuth2AuthenticationSuccessHandler(TokenProvider tokenProvider, AppProperties appProperties,
-                                              HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
-        this.tokenProvider = tokenProvider;
-        this.appProperties = appProperties;
-        this.httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
+  @Override
+  public void onAuthenticationSuccess(
+      HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+      throws IOException, ServletException {
+    String targetUrl = determineTargetUrl(request, response, authentication);
+
+    if (response.isCommitted()) {
+      logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
+      return;
     }
 
-    @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        String targetUrl = determineTargetUrl(request, response, authentication);
+    clearAuthenticationAttributes(request, response);
 
-        if (response.isCommitted()) {
-            logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
-            return;
-        }
+    response.setHeader(
+        "Set-Cookie",
+        "X-AUTH-TOKEN="
+            + tokenProvider.createToken(authentication)
+            + ";"
+            + "Path=/; HttpOnly; Domain=localhost;");
+    getRedirectStrategy().sendRedirect(request, response, targetUrl);
+  }
 
-        clearAuthenticationAttributes(request, response);
+  protected String determineTargetUrl(
+      HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+    Optional<String> redirectUri =
+        CookieUtils.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME).map(Cookie::getValue);
 
-        response.setHeader("Set-Cookie", "X-AUTH-TOKEN=" + tokenProvider.createToken(authentication) + ";" + "Path=/; HttpOnly; Domain=localhost;");
-        getRedirectStrategy().sendRedirect(request, response, targetUrl);
+    if (redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())) {
+      throw new BadRequestException(
+          "Sorry! We've got an Unauthorized Redirect URI and can't proceed with the authentication");
     }
 
-    protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        Optional<String> redirectUri = CookieUtils.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
-                .map(Cookie::getValue);
+    String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
+    return UriComponentsBuilder.fromUriString(targetUrl).toUriString();
+  }
 
-        if(redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())) {
-            throw new BadRequestException("Sorry! We've got an Unauthorized Redirect URI and can't proceed with the authentication");
-        }
+  protected void clearAuthenticationAttributes(
+      HttpServletRequest request, HttpServletResponse response) {
+    super.clearAuthenticationAttributes(request);
+    httpCookieOAuth2AuthorizationRequestRepository.removeAuthorizationRequest(
+        request, response);
+  }
 
-        String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
-        return UriComponentsBuilder.fromUriString(targetUrl).toUriString();
-    }
+  private boolean isAuthorizedRedirectUri(String uri) {
+    URI clientRedirectUri = URI.create(uri);
 
-    protected void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {
-        super.clearAuthenticationAttributes(request);
-        httpCookieOAuth2AuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
-    }
-
-    private boolean isAuthorizedRedirectUri(String uri) {
-        URI clientRedirectUri = URI.create(uri);
-
-        return appProperties.getOauth2().getAuthorizedRedirectUris()
-                .stream()
-                .anyMatch(authorizedRedirectUri -> {
-                    // Only validate host and port. Let the clients use different paths if they want to
-                    URI authorizedURI = URI.create(authorizedRedirectUri);
-                    if(authorizedURI.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
-                            && authorizedURI.getPort() == clientRedirectUri.getPort()) {
-                        return true;
-                    }
-                    return false;
-                });
-    }
+    return appProperties.getOauth2().getAuthorizedRedirectUris().stream()
+        .anyMatch(
+            authorizedRedirectUri -> {
+              // Only validate host and port. Let the clients use different paths if they want to
+              URI authorizedURI = URI.create(authorizedRedirectUri);
+              if (authorizedURI.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
+                  && authorizedURI.getPort() == clientRedirectUri.getPort()) {
+                return true;
+              }
+              return false;
+            });
+  }
 }

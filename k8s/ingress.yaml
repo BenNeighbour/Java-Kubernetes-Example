@@ -5,10 +5,12 @@ metadata:
   namespace: default
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "X-Forwarded-For, X-Forwarded-Proto, X-Forwarded-Port, X-Forwarded-Prefix"
+    ingress.kubernetes.io/x-forwarded-prefix: "true"
 spec:
   rules:
-    - host: hello-world.info
-      http:
+    - http:
         paths:
           - path: /api/(.*)
             pathType: Prefix

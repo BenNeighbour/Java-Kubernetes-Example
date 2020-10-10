@@ -44,7 +44,8 @@ metadata:
   name: postgresql
   namespace: default
 spec:
-  selector:
-    app: postgresql
+  type: NodePort
   ports:
     - port: 5432
+  selector:
+    app: postgresql
