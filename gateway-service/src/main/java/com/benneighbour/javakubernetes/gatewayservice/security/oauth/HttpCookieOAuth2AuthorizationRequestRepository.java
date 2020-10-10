@@ -45,7 +45,6 @@ public class HttpCookieOAuth2AuthorizationRequestRepository
     if (StringUtils.isNotBlank(redirectUriAfterLogin)) {
       CookieUtils.addCookie(
           response, REDIRECT_URI_PARAM_COOKIE_NAME, redirectUriAfterLogin, cookieExpireSeconds);
-      System.out.println("Added Cookie: " + redirectUriAfterLogin);
     }
   }
 

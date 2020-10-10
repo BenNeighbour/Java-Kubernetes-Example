@@ -61,6 +61,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             + tokenProvider.createToken(authentication)
             + ";"
             + "Path=/; HttpOnly; Domain=localhost;");
+
     getRedirectStrategy().sendRedirect(request, response, targetUrl);
   }
 
@@ -81,7 +82,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
   protected void clearAuthenticationAttributes(
       HttpServletRequest request, HttpServletResponse response) {
     super.clearAuthenticationAttributes(request);
-    httpCookieOAuth2AuthorizationRequestRepository.removeAuthorizationRequest(
+    httpCookieOAuth2AuthorizationRequestRepository.removeAuthorizationRequestCookies(
         request, response);
   }
 
